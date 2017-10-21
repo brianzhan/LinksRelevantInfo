@@ -1,1 +1,24 @@
-Project Title:Creating a delicious mobile experience								Project Type:New Product DevelopmentQuarter:SpringYear:2017Competition/Experiential Learning:KIEI 932: Product Management in TechnologyFunction/Discipline:Product ManagementSponsor: YesPleaseTeam Name (if applicable):AgileblastersTeam Members:Tom McIntyreNick AnastasiadesAndy RainaZack SchmidtImpact/Result:Grade: A
+
+
+A simple example page
+
+
+
+
+                First paragraph.
+            
+
+                Second paragraph.
+            
+
+
+
+                First outer paragraph.
+            
+
+
+
+                Second outer paragraph.
+            
+
+
