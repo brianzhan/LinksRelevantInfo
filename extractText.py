@@ -12,3 +12,7 @@ import requests
 page = requests.get("http://dataquestio.github.io/web-scraping-pages/ids_and_classes.html")
 soup = BeautifulSoup(page.content, 'html.parser')
 print(soup.prettify())
+soup_string = str(soup)
+text_file = open("Output.txt","w")
+text_file.write(soup_string)
+text_file.close()
