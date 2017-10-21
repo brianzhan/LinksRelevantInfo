@@ -2,7 +2,7 @@ import rake
 import operator
 
 #have the text in the document "test.txt"
-with open('test.txt', 'r') as myfile:
+with open('output.txt', 'r') as myfile:
     text = myfile.read().replace('\n', '')
 
 #using constraint where each keyword appears in text at least twice
