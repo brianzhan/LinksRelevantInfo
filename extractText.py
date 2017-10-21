@@ -14,7 +14,7 @@ soup = BeautifulSoup(page.content, 'html.parser')
 # <<<<<<< HEAD
 print(soup.prettify())
 soup_string = str(soup.text)
-text_file = open("Output.txt","w")
+text_file = open("./RAKE/Output.txt","w")
 text_file.write(soup_string)
 text_file.close()
 # =======
