@@ -53,7 +53,7 @@ class rake_classify:
 
 
 ## Example
-x = docx_to_txt("/Users/brianzhan/Documents/charter1.docx")
+x = docx_to_txt("./charter1.docx")
 x.convertDocx()
 
 x = html_to_txt("http://dataquestio.github.io/web-scraping-pages/ids_and_classes.html")
