@@ -50,5 +50,3 @@ class rake_classify:
 		rake_object = rake.Rake("SmartStoplist.txt", 3, 3, 2)
 		keywords = rake_object.run(text)
 		print("keywords2 are ", keywords)
-
-
