@@ -2,7 +2,9 @@
 
 sudo pip install python-docx
 
-sudo pip install tkinter
+Use Python 3, required for tkinter
+
+Run RAKE/interface.py to produce classifications
 
 
 ## Testing
