@@ -27,7 +27,7 @@ class html_to_txt:
 		soup = BeautifulSoup(page.content, 'html.parser')
 		# print(soup.prettify())
 		soup_string = str(soup.text)
-		text_file = open("./OutputHTML.txt","w")
+		text_file = open("./output.txt","w")
 		text_file.write(soup_string)
 		text_file.close()
 
@@ -42,23 +42,13 @@ class rake_classify:
 		# print "text is  ", text
 
 		#using constraint where each keyword appears in text at least twice
-		rake_object = rake.Rake("SmartStoplist.txt", 3, 3, 2)
+		rake_object = rake.Rake("SmartStoplist.txt", 3, 3, 1)
 		keywords = rake_object.run(text)
 		print("keywords1 are ", keywords)
 
 		#using constraint where each keyword appears in text at least three times
-		rake_object = rake.Rake("SmartStoplist.txt", 3, 3, 3)
+		rake_object = rake.Rake("SmartStoplist.txt", 3, 3, 2)
 		keywords = rake_object.run(text)
 		print("keywords2 are ", keywords)
 
 
-## Example
-x = docx_to_txt("/Users/brianzhan/Documents/charter1.docx")
-x.convertDocx()
-
-x = html_to_txt("http://dataquestio.github.io/web-scraping-pages/ids_and_classes.html")
-x.convertUrl()
-
-#output is the output file
-x = rake_classify("output.txt")
-x.extractKeywords()

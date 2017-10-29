@@ -1,5 +1,6 @@
 from tkinter import Tk, Label, Button, filedialog, StringVar, Entry, END
 from shutil import copyfile
+from docx_to_txt import docx_to_txt, html_to_txt, rake_classify
 import os
 
 class MyFirstGUI:
@@ -32,11 +33,25 @@ class MyFirstGUI:
     def uploadFile(self):
         cwd = os.getcwd()
         filename = filedialog.askopenfilename()
-        copyfile(filename, cwd+"/test.txt")
-        self.filePath = filename
+        copyfile(filename, cwd+"/test.docx")
+        self.filePath = cwd+"/test.docx"
+
+        docParse = docx_to_txt(self.filePath)
+        docParse.convertDocx()
+
+        cwd = os.getcwd()
+        r = rake_classify(cwd+"/output.txt")
+        r.extractKeywords()
 
     def confirmUrl(self):
         self.url = self.v.get()
+
+        htmlParser = html_to_txt(self.url)
+        htmlParser.convertUrl()
+        
+        cwd = os.getcwd()
+        r = rake_classify(cwd+"/output.txt")
+        r.extractKeywords()
         
 
 root = Tk()
