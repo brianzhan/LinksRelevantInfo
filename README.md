@@ -1,3 +1,5 @@
+sudo pip install python-docx
+
 In docx_to_txt, modify the parameter of getText() to input the docx whose output will be converted to a .txt, in ./RAKE/output.txt
 
 in extractText.py, modify the parameter of requests.get (line 12), to include the URL whose output will be converted to a .txt, in /RAKE/OutputHTML.txt
