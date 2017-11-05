@@ -8,7 +8,7 @@ class MyFirstGUI:
         self.master = master
         self.filePath = ""
         self.url = ""
-        
+
         master.title("Big Brother")
 
         self.label1 = Label(master, text="Choose file to upload")
@@ -23,7 +23,7 @@ class MyFirstGUI:
         e = Entry(master, textvariable=self.v)
         e.delete(0, END)
         e.pack()
-        
+
         self.confirm_button = Button(master, text="Confirm", command=self.confirmUrl)
         self.confirm_button.pack()
 
@@ -48,11 +48,11 @@ class MyFirstGUI:
 
         htmlParser = html_to_txt(self.url)
         htmlParser.convertUrl()
-        
+
         cwd = os.getcwd()
         r = rake_classify(cwd+"/output.txt")
         r.extractKeywords()
-        
+
 
 root = Tk()
 my_gui = MyFirstGUI(root)
