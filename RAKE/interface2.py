@@ -2,6 +2,11 @@ from tkinter import Tk, Label, Button, filedialog, StringVar, Entry, END, LEFT, 
 from shutil import copyfile
 from docx_to_txt import docx_to_txt, html_to_txt, rake_classify
 import os
+from paralleldots import set_api_key, get_api_key, similarity, ner, taxonomy, sentiment, keywords, intent, emotion, multilang, abuse, sentiment_social
+#DO NOT randomly test, limited to 100 calls/day, for testing go to: https://www.paralleldots.com/semantic-analysis
+# more API examples here: https://github.com/ParallelDots/ParallelDots-Python-API
+
+set_api_key("rjIdkelw0TpgqoMXvVm3GU6ZSmrlIQCawicY5mGyB0I")
 
 class MyFirstGUI:
     def __init__(self, master):
@@ -10,6 +15,8 @@ class MyFirstGUI:
         self.input1 = ""
         self.input2 = ""
         self.input3 = ""
+        self.dic = ""
+        self.charterDir = "../ProjectCharters/"
 
         master.title("Big Brother")
 
@@ -52,14 +59,45 @@ class MyFirstGUI:
         self.close_button = Button(master, text="Close", command=master.quit)
         self.close_button.pack()
 
+    def getDic(self, path):
+        docParse = docx_to_txt(path)
+        keyCategoriesDict = docParse.parseDocx()
+        return keyCategoriesDict
+
+    def getTextBody(self, dic):
+        return dic["Business Need"]
+
+    def findCharter(self):
+        text1 = self.getTextBody(self.dic)
+
+        maxScore = 0
+        bestCharter = ""
+        for filename in os.listdir(self.charterDir):
+            if filename[0] == '~':
+                continue
+            if filename.endswith(".docx"):
+                filepath = self.charterDir + filename
+                dic = self.getDic(filepath)
+                text2 = self.getTextBody(dic)
+                scoreDic = similarity(text1, text2)
+                score = scoreDic["actual_score"]
+                print(type(score))
+                print(score, " ", filename)
+                print("--------")
+                if score > maxScore:
+                    maxScore = score
+                    bestCharter = filename
+
+        return bestCharter
+                
     def uploadFile(self):
         cwd = os.getcwd()
         filename = filedialog.askopenfilename()
         copyfile(filename, cwd+"/test.docx")
         self.filePath = cwd+"/test.docx"
 
-        docParse = docx_to_txt(self.filePath)
-        keyCategoriesDict = docParse.parseDocx()
+        self.dic = self.getDic(self.filePath)
+        keyCategoriesDict = self.dic
         for key,value in keyCategoriesDict.items():
             strPrint = str(key) + '->' + str(value)
             print(strPrint)
@@ -67,6 +105,12 @@ class MyFirstGUI:
         cwd = os.getcwd()
         r = rake_classify(cwd+"/output.txt")
         r.extractKeywords()
+
+        text = self.getTextBody(self.dic)
+        print(text)
+        print("----------")
+        charterName = self.findCharter()
+        print(charterName)
 
     def confirmText(self):
         self.inputText1 = self.v1.get()
