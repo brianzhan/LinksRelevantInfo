@@ -3,7 +3,9 @@ from shutil import copyfile
 from docx_to_txt import docx_to_txt, html_to_txt, rake_classify
 import os
 import heapq
+from time import sleep
 from paralleldots import set_api_key, get_api_key, similarity, ner, taxonomy, sentiment, keywords, intent, emotion, multilang, abuse, sentiment_social
+import threading
 #DO NOT randomly test, limited to 100 calls/day, for testing go to: https://www.paralleldots.com/semantic-analysis
 # more API examples here: https://github.com/ParallelDots/ParallelDots-Python-API
 
@@ -62,6 +64,8 @@ class MyFirstGUI:
 
         self.close_button = Button(master, text="Close", command=master.quit)
         self.close_button.pack()
+
+        self.threads = []
 
     def getDic(self, path):
         docParse = docx_to_txt(path)
@@ -136,6 +140,12 @@ class MyFirstGUI:
         print("--------")
 
         return bestCharter
+
+    def recheckFile(self):
+        while(True):
+            sleep(30)
+            charterName = self.findCharter()
+            print(charterName)
                 
     def uploadFile(self):
         cwd = os.getcwd()
@@ -162,6 +172,10 @@ class MyFirstGUI:
         print("----------")
         charterName = self.findCharter()
         print(charterName)
+        t = threading.Thread(target=self.recheckFile)
+        self.threads.append(t)
+        t.start()
+
 
     def confirmText(self):
         self.inputText1 = self.v1.get()
