@@ -2,6 +2,7 @@ from tkinter import Tk, Label, Button, filedialog, StringVar, Entry, END, LEFT, 
 from shutil import copyfile
 from docx_to_txt import docx_to_txt, html_to_txt, rake_classify
 import os
+import heapq
 from paralleldots import set_api_key, get_api_key, similarity, ner, taxonomy, sentiment, keywords, intent, emotion, multilang, abuse, sentiment_social
 #DO NOT randomly test, limited to 100 calls/day, for testing go to: https://www.paralleldots.com/semantic-analysis
 # more API examples here: https://github.com/ParallelDots/ParallelDots-Python-API
@@ -17,6 +18,9 @@ class MyFirstGUI:
         self.input3 = ""
         self.dic = ""
         self.charterDir = "../ProjectCharters/"
+        
+        self.type=""
+        self.title=""
 
         master.title("Big Brother")
 
@@ -69,7 +73,10 @@ class MyFirstGUI:
 
     def findCharter(self):
         text1 = self.getTextBody(self.dic)
-
+        
+        pq = []
+        samecategoryname = []
+        samecategorypath = []
         maxScore = 0
         bestCharter = ""
         for filename in os.listdir(self.charterDir):
@@ -83,10 +90,48 @@ class MyFirstGUI:
                 score = scoreDic["actual_score"]
                 print(type(score))
                 print(score, " ", filename)
+                currname = ""
+                keyCategoriesDict = self.getDic(filepath)
+                
+                for key,value in keyCategoriesDict.items():
+                    if str(key)=="Project Title":
+                        print(str(value))
+                        currname=str(value)
+                    if str(key)=="Project Type":
+                        if str(value)==self.type and currname!=self.title and filepath!=self.filePath:
+                            samecategorypath.append(filepath)
+                            samecategoryname.append(currname)
+                        break
+            
+                if currname!=self.title and filepath!=self.filePath:
+                    heapq.heappush(pq,(1-score, currname))
+                
                 print("--------")
-                if score > maxScore:
+                if score > maxScore and currname!=self.title:
                     maxScore = score
                     bestCharter = filename
+
+        
+        print("Current Project: ",self.title)
+        print("--------")
+        print("Here is the list of projects with the same project type:")
+        for i in range (0,len(samecategoryname)):
+            print("--------")
+            print("Project Name: ",samecategoryname[i])
+            print(samecategorypath[i])
+        print("--------")
+        
+        
+        amount = 3
+        if len(pq)<amount:
+            amount = len(pq)
+        print("Here is the list of similar projects:")
+        for i in range (0,amount):
+            best = heapq.heappop(pq)
+            print("--------")
+            print("Project Name: ", best[1])
+            print("Percentage of Similarity: ", 1-best[0])
+        print("--------")
 
         return bestCharter
                 
@@ -100,6 +145,10 @@ class MyFirstGUI:
         keyCategoriesDict = self.dic
         for key,value in keyCategoriesDict.items():
             strPrint = str(key) + '->' + str(value)
+            if(str(key)=="Project Title"):
+                self.title=str(value)
+            if(str(key)=="Project Type"):
+                self.type=str(value)
             print(strPrint)
 
         cwd = os.getcwd()
