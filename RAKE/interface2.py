@@ -86,7 +86,9 @@ class MyFirstGUI:
                 filepath = self.charterDir + filename
                 dic = self.getDic(filepath)
                 text2 = self.getTextBody(dic)
+                print(text2)
                 scoreDic = similarity(text1, text2)
+                print(scoreDic)
                 score = scoreDic["actual_score"]
                 print(type(score))
                 print(score, " ", filename)
@@ -144,7 +146,7 @@ class MyFirstGUI:
         self.dic = self.getDic(self.filePath)
         keyCategoriesDict = self.dic
         for key,value in keyCategoriesDict.items():
-            strPrint = str(key) + '->' + str(value)
+            strPrint = str(self.cleanUnicode(key)) + '->' + str(self.cleanUnicode(value))
             if(str(key)=="Project Title"):
                 self.title=str(value)
             if(str(key)=="Project Type"):
@@ -168,6 +170,14 @@ class MyFirstGUI:
         print(self.inputText2)
         self.inputText3 = self.v3.get()
         print(self.inputText3)
+
+    def cleanUnicode(self, str):
+        str = str.replace(u'\u2013', '-')
+        str = str.replace(u'\u2019', "'")
+        str = str.replace(u'\u201c','"')
+        str = str.replace(u'\u201d', '"')
+        return str
+
 
 root = Tk()
 my_gui = MyFirstGUI(root)
