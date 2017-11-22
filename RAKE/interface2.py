@@ -148,39 +148,6 @@ class MyFirstGUI:
             print(charterName)
 
     #constraint: only one file can be open at a time
-    def getOpenFile(self):
-        files = os.listdir("~/Users/pierce/Documents/Projects/BigBrother/LinksRelevantInfo/ProjectCharters/")
-        file = ""
-        for f in files:
-            if "~$" in f:
-                file = f
-                break
-        if file != "":
-            copyfile(file, os.getcwd()+"/test.docx")
-            self.filePath = cwd+"/test.docx"
-
-            self.dic = self.getDic(self.filePath)
-            keyCategoriesDict = self.dic
-            for key,value in keyCategoriesDict.items():
-                strPrint = str(self.cleanUnicode(key)) + '->' + str(self.cleanUnicode(value))
-                if(str(key)=="Project Title"):
-                    self.title=str(value)
-                if(str(key)=="Project Type"):
-                    self.type=str(value)
-                print(strPrint)
-
-            cwd = os.getcwd()
-            r = rake_classify(cwd+"/output.txt")
-            r.extractKeywords()
-
-            text = self.getTextBody(self.dic)
-            print(text)
-            print("----------")
-            charterName = self.findCharter()
-            print(charterName)
-            t = threading.Thread(target=self.recheckFile)
-            self.threads.append(t)
-            t.start()
 
 
     def uploadFile(self):
@@ -229,6 +196,135 @@ class MyFirstGUI:
         return str
 
 
-root = Tk()
-my_gui = MyFirstGUI(root)
-root.mainloop()
+class RunningFileSearch:
+    def __init__(self, master):
+        self.master = master
+        self.filePath = ""
+        self.input1 = ""
+        self.input2 = ""
+        self.input3 = ""
+        self.dic = ""
+        self.charterDir = "../ProjectCharters/"
+
+        self.type = ""
+        self.title = ""
+
+        self.threads = []
+
+        master.title("Big Brother")
+
+    def confirmText(self):
+        self.inputText1 = self.v1.get()
+        print(self.inputText1)
+        self.inputText2 = self.v2.get()
+        print(self.inputText2)
+        self.inputText3 = self.v3.get()
+        print(self.inputText3)
+
+    def cleanUnicode(self, str):
+        str = str.replace(u'\u2013', '-')
+        str = str.replace(u'\u2019', "'")
+        str = str.replace(u'\u201c', '"')
+        str = str.replace(u'\u201d', '"')
+        return str
+
+    def recheckFile(self):
+        while (True):
+            sleep(30)
+            charterName = self.findCharter()
+            print(charterName)
+
+    def getDic(self, path):
+        docParse = docx_to_txt(path)
+        keyCategoriesDict = docParse.parseDocx()
+        return keyCategoriesDict
+
+    def getTextBody(self, dic):
+        return dic["Business Need"]
+
+    def findCharter(self):
+        text1 = self.getTextBody(self.dic)
+
+        pq = []
+        samecategoryname = []
+        samecategorypath = []
+        maxScore = 0
+        bestCharter = ""
+        for filename in os.listdir(self.charterDir):
+            if filename[0] == '~':
+                continue
+            if filename.endswith(".docx"):
+                filepath = self.charterDir + filename
+                dic = self.getDic(filepath)
+                text2 = self.getTextBody(dic)
+                print(text2)
+                scoreDic = similarity(text1, text2)
+                print(scoreDic)
+                score = scoreDic["actual_score"]
+                print(type(score))
+                print(score, " ", filename)
+                currname = ""
+                keyCategoriesDict = self.getDic(filepath)
+
+                for key, value in keyCategoriesDict.items():
+                    if str(key) == "Project Title":
+                        print(str(value))
+                        currname = str(value)
+                    if str(key) == "Project Type":
+                        if str(value) == self.type and currname != self.title and filepath != self.filePath:
+                            samecategorypath.append(filepath)
+                            samecategoryname.append(currname)
+                        break
+
+                if currname != self.title and filepath != self.filePath:
+                    heapq.heappush(pq, (1 - score, currname))
+
+                print("--------")
+                if score > maxScore and currname != self.title:
+                    maxScore = score
+                    bestCharter = filename
+
+    def getOpenFile(self):
+        prefix = "/Users/pierce/Documents/Projects/BigBrother/LinksRelevantInfo/ProjectCharters"
+        files = os.listdir(prefix)
+        file = ""
+        fsuff = ""
+        print(files)
+        for f in files:
+            if "~$" in f:
+                fsuff = f[2:]
+                break
+        for f in files:
+            if fsuff in f and "~$" not in f:
+                file = f
+                break
+        if file != "":
+            copyfile(prefix + "/" + file, os.getcwd()+"/test.docx")
+            self.filePath = os.getcwd() + "/test.docx"
+            self.dic = self.getDic(self.filePath)
+            keyCategoriesDict = self.dic
+            for key, value in keyCategoriesDict.items():
+                strPrint = str(self.cleanUnicode(key)) + '->' + str(self.cleanUnicode(value))
+                if (str(key) == "Project Title"):
+                    self.title = str(value)
+                if (str(key) == "Project Type"):
+                    self.type = str(value)
+                print(strPrint)
+
+            cwd = os.getcwd()
+            r = rake_classify(cwd + "/output.txt")
+            r.extractKeywords()
+
+            text = self.getTextBody(self.dic)
+            print(text)
+            print("----------")
+            charterName = self.findCharter()
+            print(charterName)
+            t = threading.Thread(target=self.recheckFile)
+            self.threads.append(t)
+            t.start()
+
+if __name__ == "__main__":
+    root = Tk()
+    s = RunningFileSearch(root)
+    s.getOpenFile()
