@@ -146,7 +146,43 @@ class MyFirstGUI:
             sleep(30)
             charterName = self.findCharter()
             print(charterName)
-                
+
+    #constraint: only one file can be open at a time
+    def getOpenFile(self):
+        files = os.listdir("~/Users/pierce/Documents/Projects/BigBrother/LinksRelevantInfo/ProjectCharters/")
+        file = ""
+        for f in files:
+            if "~$" in f:
+                file = f
+                break
+        if file != "":
+            copyfile(file, os.getcwd()+"/test.docx")
+            self.filePath = cwd+"/test.docx"
+
+            self.dic = self.getDic(self.filePath)
+            keyCategoriesDict = self.dic
+            for key,value in keyCategoriesDict.items():
+                strPrint = str(self.cleanUnicode(key)) + '->' + str(self.cleanUnicode(value))
+                if(str(key)=="Project Title"):
+                    self.title=str(value)
+                if(str(key)=="Project Type"):
+                    self.type=str(value)
+                print(strPrint)
+
+            cwd = os.getcwd()
+            r = rake_classify(cwd+"/output.txt")
+            r.extractKeywords()
+
+            text = self.getTextBody(self.dic)
+            print(text)
+            print("----------")
+            charterName = self.findCharter()
+            print(charterName)
+            t = threading.Thread(target=self.recheckFile)
+            self.threads.append(t)
+            t.start()
+
+
     def uploadFile(self):
         cwd = os.getcwd()
         filename = filedialog.askopenfilename()
